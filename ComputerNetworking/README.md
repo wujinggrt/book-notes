@@ -60,4 +60,65 @@ Ensure host by IP, process by port number. Socket is the interface only.
 
 ## 3.3 Connectionless Transport: UDP
 
+Aside from the multiplexing/demultiplexing function and some light error checking, UDP add nothing to IP. If a app chooses UDP, it is almost talking with IP.
 
+UDP **takes** message from the application process, **attaches** src and dest port**, **adds** two other small fields, and **passes** the resulting segment to the network layer.
+
+UDP has **no handshaking** between sending and receiving transport-layer entities before sending a segment. For this reason, UDP is said to be **connnectionless**.
+
+e.g. DNS is an application-layer protocol that typically uses UDP.
+
+Better suited for UDP for the following reasons:
+0. **Finer(精确) application-level control over what data is sent, and when.** UDP immediately pass the segment to network layer after package rather than more links. (real-time, minimum sending rate, tolerate some data loss)
+0. **No connection establishment.**
+0. **No connection state.**
+0. **Small packet header overhead.** TCP segment: 20 bytes, whereas UDP has only 8.
+
+UDP is possible to have reliable data transfer. e.g. QUIC protocol.
+
+### 3.3.1 UDP Segment Structure
+
+The UDP **header** has only **four fields**, **each** consisting of **two bytes**, that is, **4 * 2 * 8** bits in total.The **data field** of the UDP segment is the application data. (Not in header)
+
+Header:
+0. The **src/dst port** #, 2 * 2 * 8 bits.
+0. The **length field** specifies the **number of bytes** in the UDP **segment** (**header plus data**). This field is needed since the size of data field may **differ** to next segment.
+0. The **checksum** is used by receiving host to check whether **errors** have been introduced into the segment.
+
+### 3.3.2 Chceksum (question: what eactly the 3 16-bit words is?)
+
+At the sender side, sum of all the 3 16-bit words in the segment, and make 1s complement (取反) as checksum.
+
+At the receiver side, all four 16-bit words are added, **including** the checksum. If no errors are introduced into the packet, it turns out 1111 1111 1111 1111. If one of the bits is a 0, that errors have been introduced.
+
+Why UDP provides a checksum in first place? The reason is that there is no guarantee that all th lins beteween two side provide error checking.
+
+Because IP is supposed to run over just about any layer-2 protocol, it is useful for transport layer to provide error checking.
+
+Although UDP provides errors checking, it does not do anything to **recover** from an error.
+
+## 3.4 Principles of Reliable Data Transfer
+
+No transferred data bits are corrupted or lost.
+
+The task is difficult by the fact that the layer **below** the reliable data transfre protocol may be **unreliable**. Such as best effort transfer IP. TCP over the IP.
+
+View the lower layer simply as unreliable point-to-point channel.
+
+Assumption: packets possibly being lost.
+
+The sending side invoke *rdt_send()*, it will pass the data. (Application layer need to pass data, it will be called, implemented in transport layer.)
+
+While the receiving side invokes *rdt_rcv()*. (Transport layer call to receive.) When *rdt* protocol wants to deliver data to the upper layer, it will do so by calling *deliver_data()*. (Pass to application layer call)
+
+The term "packet" is more appropriate here rather than "segment".
+
+Both sending and receiving side of *rdt* call to the other side by a call to *udt_send()*.
+
+### 3.4.1 Buildling a RDT Protocol
+
+#### Perfectly Reliable Channel: rdt1.0
+
+Simplest case: the underlying channel is completely reliable. We'll call it **rdt1.0** protocol.
+
+The **finite-state machine (FSM)** definition for *rdt1.0* sender and receiver. 
