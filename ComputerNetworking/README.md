@@ -126,3 +126,18 @@ Simplest case: the underlying channel is completely reliable. We'll call it **rd
 The **finite-state machine (FSM)** definition for *rdt1.0* sender and receiver. 
 
 ![definition](./images/rcv_send_definition.png)
+
+The sender and receiver each have just **one state**. Arrows indicate state transition. (A transisiton is necessarily from the one state **back** to itself.)
+
+It is important to identify the initial state of each FSM.
+
+The sending side of *rdt*:
+* accepts data from the upper layer via *rdt_send(data)* event
+* <<<<<<<<<<<<<<<< upon horizontal line, below >>>>>>>>>>>>>>>>
+* creates a packet containing the data (via *make_pkt(data)*)
+* sends the packet to the channel.
+
+The receiving side:
+* rdt receives a packet from the underlying channel via the *rdt_rcv(packet)* event.
+* removes the data from the packet (via action *extract(packet, data)*)
+* passes the data up to the upper layer (via action *deliver_data(data) *)
