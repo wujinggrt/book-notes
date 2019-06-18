@@ -124,3 +124,5 @@ Both sending and receiving side of *rdt* call to the other side by a call to *ud
 Simplest case: the underlying channel is completely reliable. We'll call it **rdt1.0** protocol.
 
 The **finite-state machine (FSM)** definition for *rdt1.0* sender and receiver. 
+
+![definition](./images/rcv_send_definition.png)
