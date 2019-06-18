@@ -1,4 +1,4 @@
-1. [Intro](##3-4-Principles-of-Reliable-Data-Transfer)
+1. [3.4 printciples of rdt](#34-principles-of-reliable-data-transfer)
 
 ## 3.1.2
 
