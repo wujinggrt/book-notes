@@ -94,7 +94,7 @@ void f() {
 }
 ```
 
-In C++ 17 with class template argument deduction feature, it can be perform in this way:
+In C++ 17 with class template argument deduction feature, it can be written in this way:
 ```C++
 std::lock_guard guard(some_mutext);
 ```
