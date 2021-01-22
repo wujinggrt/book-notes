@@ -520,7 +520,7 @@ The keyword `volatile` in Java and C# has the meaning of `std::atomic` in C++, i
 
 Memory order may cause the condition variables in two way:
 1. spurious wakeup while no notification happened.
-2. losk wakeup: the sender sends its notification before the receiver gets to a wait state.
+2. lost wakeup: the sender sends its notification before the receiver gets to a wait state.
 
 `compare_exchange_strong`, this operation often called compare and swap (CAS), it is the foundation of non-blocking algorithms.
 
