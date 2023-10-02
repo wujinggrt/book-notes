@@ -35,7 +35,7 @@ Worker 进程的主要逻辑位于 ngx_worker_process_cycle 函数中。负责�
 
 master进程的主逻辑在ngx_master_process_cycle。worker进程的主逻辑在ngx_worker_process_cycle。
 
-```
+```C
 // 这是main函数末尾，多进程模式为master/worker
 if (ngx_process == NGX_PROCESS_MASTER) {
 	// master/worker 模式下要执行的代码
@@ -44,12 +44,6 @@ if (ngx_process == NGX_PROCESS_MASTER) {
 	// 单进程模式下要执行的代码
 	ngx_single_process_cycle(cycle, &ctx);
 }
-
-
-作者：herozem
-链接：https://zhuanlan.zhihu.com/p/492319104
-来源：知乎
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 void ngx_master_process_cycle(ngx_cycle_t *cycle, ngx_master_ctx_t *ctx)
 {
@@ -87,12 +81,7 @@ void ngx_master_process_cycle(ngx_cycle_t *cycle, ngx_master_ctx_t *ctx)
 
 ## worker如何工作
 
-```
-作者：herozem
-链接：https://zhuanlan.zhihu.com/p/492319104
-来源：知乎
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-
+```C
 static void ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n,
                                        ngx_int_t type)
 {
@@ -131,7 +120,7 @@ static void ngx_start_worker_processes(ngx_cycle_t *cycle, ngx_int_t n,
 
 逻辑是初始化各个模块，然后进入处理event的工作。
 
-```
+```C
 ngx_pid_t ngx_spawn_process(ngx_cycle_t *cycle,
                             ngx_spawn_proc_pt proc, void *data,
                             char *name, ngx_int_t respawn)
@@ -173,7 +162,7 @@ static void ngx_worker_process_cycle(ngx_cycle_t *cycle, void *data)
 
 ### master/worker的通信, ngx_write_channel()
 
-```
+```C
 // master/worker 之间进程间通信
 ngx_int_t ngx_write_channel(ngx_socket_t s, ngx_channel_t *ch, size_t size,
                             ngx_log_t *log) 
@@ -237,6 +226,7 @@ ngx_int_t ngx_write_channel(ngx_socket_t s, ngx_channel_t *ch, size_t size,
 
     return NGX_OK;
 }
+```
 
 ## 使用了共享内存和信号量的函数
 
@@ -254,7 +244,7 @@ src/stream, src/http, src/event模块都有使用。其中，stream 模块是用
 
 因为cycle管理核心逻辑，从cycle部分开始看起。
 
-```
+```C
 // src/core/ngx_cycle.c:ngx_init_cycle()
 ngx_cycle_t *
 ngx_init_cycle(ngx_cycle_t *old_cycle) {
@@ -294,7 +284,7 @@ ngx_init_cycle(ngx_cycle_t *old_cycle) {
 
 在src/core/ngx_cycle.c中，ngx_shm_zone_t相关定义如下：
 
-```
+```C
 typedef struct ngx_shm_zone_s  ngx_shm_zone_t;
 struct ngx_shm_zone_s {
     void                     *data;

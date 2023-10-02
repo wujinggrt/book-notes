@@ -108,7 +108,7 @@ pshared:
 
 Some implementation don't support process-shared semaphor(With the advent of NPTL, Linux had supported yet).
 
-```
+```C++
 #include <semaphore.h>
 #include <sys/mman.h>
 #include <fcntl.h>

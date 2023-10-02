@@ -2,7 +2,7 @@
 
 马上初始化资源的，称为eager evaluation，延迟到需要时再初始化方式称为lazy evaluation。后者能够避免某些不必要的运算开销。
 
-```
+```C++
 auto eager_get = [] (string_view path, audio default) {
     return audio::exists(path) ? audio::load(path) : default;
 };
@@ -20,7 +20,7 @@ auto pig_sound = lazy_get("pig.wav",
 
 例子如：有两个连接的字符串s1, s2，连接之后与另一个字符串s3相比，完全可以不用新申请一个std::string{s1 + s2}，而是使用迭代器，将s3前部分和s1比较，后部分与s2比较。
 
-```
+```C++
 class String {
 public:
     String() = default;
@@ -41,7 +41,7 @@ auto operator+(const String& a, const String& b) {
 
 例子如两个顶点，比较距离的时候，需要计算顶点x0-x1和y0-y1的平方，最后在开根。在只需要比较距离的场景，不需要开根操作即可比较，可以有省去计算缓慢开根的空间。
 
-```
+```C++
 class Point {
 public:
     Point(float x, float y) : x_{x}, y_{y} {}
@@ -101,7 +101,7 @@ float dist_float0 = dist_squared; // Assignment invoked std::sqrt()
 
 右值引用可以绑定到右值上，延长lifetime。比如`const char*&& s = "rvalue"; s = "still rvalue";`
 
-```
+```C++
 int main() {
     const int& ci = 1;
     // ci = 3; // cannot assign, const-qualified type
