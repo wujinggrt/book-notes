@@ -27,26 +27,32 @@ Returns starting address of mapping on success, or MAP_FAILED on error
 * flags: `MAP_FIXED` means that `addr` must be page-aligned. It is quite common to provide `MAP_PRIVATE, MAP_SHARED`.
     * MAP_ANONYMOUS: Create an anonymous mapping—that is, a mapping that is not backed by a file.
     * MAP_LOCKED (since Linux 2.6) Preload and lock the mapped pages into memory in the manner of mlock().
-* fd and offset: are used in file mappings. The offset specifies the starting point.
+* fd and offset: are used in file mappings. The offset specifies the starting point.对于匿名共享内存，指定-1和0即可。
 
 ## How to create anonymous mappings
 
 * Specify `MAP_ANONYMOUS` in `flags` and `fd` as -1. Linux provides `MAP_ANON` for compatible reason.
 * Open the `/dev/zero` virtual device file and pass to mmap.
 
+/dev/zero是一个虚拟设备(virtual device)，读取总是返回0，写入总是被丢弃。
+
+为什么会存在这两种方式？是因为使用MAP_ANONYMOUS方式来源于BSD，使用/dev/zero设备的方式来源于System V。一般来说，使用MAP_ANONYMOUS更为直观。为了考虑兼容性，一般编译参数定义USE_MAP_ANON，指定使用前者方式；反之，使用后者。
+
 ```
+#ifdef USE_MAP_ANON
 // anon
 addr = mmap(NULL, shm->size, PROT_READ|PROT_WRITE,
          MAP_ANON|MAP_SHARED, -1, 0);)
-// dev zero
+#else
 if (fd = open("/dev/zero", O_RDWR) == -1) {
     handle error ...
 }
 addr = mmap(NULL, size, 
         PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+#endif
 ```
 
-Both techniques result initializing blocks with 0.
+两种方式都会将mappings中的内容初始化为0，并且忽略offset参数，即传入0。
 
 # POSIX semaphor
 
